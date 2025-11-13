@@ -4,16 +4,13 @@
     {
       "src": "dist/deploy-angular-vercel/server/server.mjs",
       "use": "@vercel/node"
-    },
-    {
-      "src": "dist/deploy-angular-vercel/browser/**/*",
-      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
-      "src": "/(.*)",
+      "src": "/(.+)",
       "dest": "dist/deploy-angular-vercel/server/server.mjs"
     }
-  ]
+  ],
+  "outputDirectory": "dist/deploy-angular-vercel/browser"
 }
