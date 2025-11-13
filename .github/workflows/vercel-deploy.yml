@@ -13,28 +13,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 🔹 1. Clona o repositório
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 🔹 2. Configura Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
 
+      # 🔹 3. Instala dependências
       - name: Install dependencies
         run: npm ci
 
+      # 🔹 4. Gera o build de produção do Angular
       - name: Build Angular App
         run: npx ng build deploy-angular-vercel --configuration production
 
-      # 🔹 Gera Preview quando for PR em develop
+      # 🔹 5. Deploy Preview (em PRs para develop)
       - name: Deploy Preview to Vercel
         if: github.event_name == 'pull_request'
         id: vercel_preview
         run: |
-          npx vercel deploy --prebuilt --yes > preview_url.txt
+          npx vercel deploy --prebuilt --yes --token=${{ secrets.VERCEL_TOKEN }} > preview_url.txt
           echo "url=$(tail -n 1 preview_url.txt)" >> $GITHUB_OUTPUT
 
+      # 🔹 6. Comenta o link de preview no Pull Request
       - name: Comment Preview URL on PR
         if: github.event_name == 'pull_request'
         uses: marocchino/sticky-pull-request-comment@v2
@@ -42,7 +47,7 @@ jobs:
           header: vercel-preview
           message: "🚀 Preview disponível: ${{ steps.vercel_preview.outputs.url }}"
 
-      # 🔹 Faz deploy de produção quando for merge na main
+      # 🔹 7. Deploy de Produção (ao fazer push na main)
       - name: Deploy Production to Vercel
         if: github.ref == 'refs/heads/main'
-        run: npx vercel deploy --prebuilt --prod --yes
+        run: npx vercel deploy --prebuilt --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
