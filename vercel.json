@@ -1,13 +1,1 @@
-{
-  "version": 2,
-  "builds": [
-    {
-      "src": "dist/deploy-angular-vercel/browser/**",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    { "handle": "filesystem" },
-    { "src": "/.*", "dest": "/index.html" }
-  ]
-}
+{ "rewrites": [{ "source": "/(.*)", "destination": "/" }] }
