@@ -1,57 +1,31 @@
-name: Deploy Angular App to Vercel
+name: Deploy Angular to Vercel
 
 on:
   pull_request:
     branches:
       - develop
-  push:
-    branches:
-      - main
-
-permissions:
-  contents: read
-  pull-requests: write
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout do repositório
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Configura o Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
-      # 3️⃣ Instala dependências
       - name: Install dependencies
         run: npm ci
 
-      # 4️⃣ Gera o build do Angular
-      - name: Build Angular App
-        run: npx ng build deploy-angular-vercel --configuration production
+      - name: Build Angular app
+        run: npm run build --if-present
 
-      # 5️⃣ Deploy Preview (para PRs)
-      - name: Deploy Preview to Vercel
-        if: github.event_name == 'pull_request'
-        id: vercel_preview
-        run: |
-          npx vercel deploy dist/deploy-angular-vercel/browser --yes --token=${{ secrets.VERCEL_TOKEN }} > preview_url.txt
-          echo "url=$(tail -n 1 preview_url.txt)" >> $GITHUB_OUTPUT
+      - name: Deploy to Vercel
+        run: npx vercel deploy --prebuilt --yes --prod --token=${{ secrets.VERCEL_TOKEN }}
 
-      # 6️⃣ Comenta o link de Preview no Pull Request
-      - name: Comment Preview URL on PR
-        if: github.event_name == 'pull_request'
-        uses: marocchino/sticky-pull-request-comment@v2
-        with:
-          header: vercel-preview
-          message: "🚀 Preview disponível: ${{ steps.vercel_preview.outputs.url }}"
-
-      # 7️⃣ Deploy de Produção (quando for push na main)
-      - name: Deploy Production to Vercel
-        if: github.ref == 'refs/heads/main'
-        run: npx vercel deploy dist/deploy-angular-vercel/browser --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Output Vercel URL
+        run: echo "✅ Deploy realizado com sucesso!"
