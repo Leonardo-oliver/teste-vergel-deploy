@@ -36,7 +36,7 @@ jobs:
         if: github.event_name == 'pull_request'
         id: vercel_preview
         run: |
-          npx vercel deploy --dir=dist/deploy-angular-vercel --yes --token=${{ secrets.VERCEL_TOKEN }} > preview_url.txt
+          npx vercel deploy dist/deploy-angular-vercel --yes --token=${{ secrets.VERCEL_TOKEN }} > preview_url.txt
           echo "url=$(tail -n 1 preview_url.txt)" >> $GITHUB_OUTPUT
 
       # 6️⃣ Comenta o link de Preview no Pull Request
@@ -50,4 +50,4 @@ jobs:
       # 7️⃣ Deploy de Produção (quando for push na main)
       - name: Deploy Production to Vercel
         if: github.ref == 'refs/heads/main'
-        run: npx vercel deploy --dir=dist/deploy-angular-vercel --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
+        run: npx vercel deploy dist/deploy-angular-vercel --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
