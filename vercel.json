@@ -2,10 +2,18 @@
   "version": 2,
   "builds": [
     {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": { "distDir": "dist" }
+      "src": "dist/deploy-angular-vercel/server/server.mjs",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "dist/deploy-angular-vercel/browser/**/*",
+      "use": "@vercel/static"
     }
   ],
-  "framework": "angular"
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "dist/deploy-angular-vercel/server/server.mjs"
+    }
+  ]
 }
